@@ -6,15 +6,11 @@ import com.example.test_pre_diplom.entities.Member;
 import com.example.test_pre_diplom.entities.PersonalData;
 import com.example.test_pre_diplom.exceptions.MemberNotFoundException;
 import com.example.test_pre_diplom.exceptions.PersonalDataNotFoundException;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -29,37 +25,28 @@ public class MemberRestController {
     }
 
     @GetMapping("/members")
-    public CollectionModel<Member> allMembers() {
-        return CollectionModel.of(memberRepository.findAll());
+    public List<Member> allMembers() {
+        return memberRepository.findAll();
     }
 
     @GetMapping("/member/{id}")
-    public EntityModel<Member> getMember(@PathVariable Long id) {
-        return EntityModel.of(
-                        memberRepository.findById(id).orElseThrow(
-                                () -> new MemberNotFoundException("id:" + id)))
-                .add(
-                        WebMvcLinkBuilder.linkTo(
-                                        WebMvcLinkBuilder.methodOn(this.getClass()).allMembers())
-                                .withRel("all-members"))
-                .add(
-                        WebMvcLinkBuilder.linkTo(
-                                        WebMvcLinkBuilder.methodOn(this.getClass()).getPersonalData(id))
-                                .withRel("personal-data")
-                );
+    public ResponseEntity<Member> getMember(@PathVariable Long id) {
+        Optional<Member> member = memberRepository.findById(id);
+        if (member.isPresent())
+            return new ResponseEntity<>(member.get(), HttpStatus.OK);
+
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+
     }
 
     @PostMapping(path = "/member", consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Member> saveMember(@RequestBody Member member) {
-        Member savedMember = memberRepository.save(member);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}")
-                .build(savedMember.getMemberId());
-        return ResponseEntity.created(uri).build();
+    public Member saveMember(@RequestBody Member member) {
+        return memberRepository.save(member);
     }
 
     @PatchMapping(path = "/member/{id}", consumes = "application/json")
-    public ResponseEntity<Member> patchMember(@PathVariable Long id, @RequestBody Member member) {
+    public Member patchMember(@PathVariable Long id, @RequestBody Member member) {
         Member updatedMember = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("Member with id:" + id + " not found."));
 
@@ -68,8 +55,7 @@ public class MemberRestController {
             updatedMember.setPasswordHash(member.getPasswordHash());
         }
 
-        memberRepository.save(updatedMember);
-        return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri()).build();
+        return memberRepository.save(updatedMember);
     }
 
     @DeleteMapping("/member/{id}")
@@ -79,35 +65,31 @@ public class MemberRestController {
     }
 
     @GetMapping("/member/{id}/p_data")
-    public EntityModel<PersonalData> getPersonalData(@PathVariable Long id) {
+    public ResponseEntity<PersonalData> getPersonalData(@PathVariable Long id) {
         Optional<Member> member = memberRepository.findById(id);
         if (member.isEmpty())
             throw new MemberNotFoundException("id:" + id);
-        return EntityModel.of(personalDataRepository.findByMember(member.get()).orElseThrow(
-                        () -> new PersonalDataNotFoundException("Member's personal data with id: " + id + " not found.")))
-                .add(
-                        WebMvcLinkBuilder.linkTo(
-                                WebMvcLinkBuilder.methodOn(this.getClass()).getMember(id)
-                        ).withRel("member")
-                );
 
+        Optional<PersonalData> personalData = personalDataRepository.findByMember(member.get());
+        if (personalData.isPresent())
+            return new ResponseEntity<>(personalData.get(), HttpStatus.OK);
+
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @PostMapping(path = "/member/{id}/p_data", consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<PersonalData> savePersonalData(@PathVariable Long id, @RequestBody PersonalData personalData) {
+    public PersonalData savePersonalData(@PathVariable Long id, @RequestBody PersonalData personalData) {
         Optional<Member> member = memberRepository.findById(id);
         if (member.isEmpty())
             throw new MemberNotFoundException("id:" + id);
         personalData.setMember(member.get());
-        personalDataRepository.save(personalData);
-        return ResponseEntity.created(
-                        ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri())
-                .build();
+
+        return personalDataRepository.save(personalData);
     }
 
     @PatchMapping(path = "/member/{id}/p_data", consumes = "application/json")
-    public ResponseEntity<PersonalData> patchPersonalData(@PathVariable Long id, @RequestBody PersonalData personalData) {
+    public PersonalData patchPersonalData(@PathVariable Long id, @RequestBody PersonalData personalData) {
         Member member = memberRepository.findById(id).orElseThrow(
                 () -> new MemberNotFoundException("Member with id:" + id + " not found."));
         PersonalData savedPersonalData = personalDataRepository.findByMember(member)
@@ -124,8 +106,6 @@ public class MemberRestController {
         if (personalData.getPhoneNumber() != null)
             savedPersonalData.setPhoneNumber(personalData.getPhoneNumber());
 
-        personalDataRepository.save(savedPersonalData);
-
-        return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri()).build();
+        return personalDataRepository.save(savedPersonalData);
     }
 }

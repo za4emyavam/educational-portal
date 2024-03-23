@@ -9,14 +9,11 @@ import com.example.test_pre_diplom.entities.StudyGroup;
 import com.example.test_pre_diplom.exceptions.MemberNotFoundException;
 import com.example.test_pre_diplom.exceptions.StudentNotFoundException;
 import com.example.test_pre_diplom.exceptions.StudyGroupNotFoundException;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -33,63 +30,40 @@ public class StudentRestController {
     }
 
     @GetMapping("/students")
-    public CollectionModel<Student> allStudents() {
-        return CollectionModel.of(studentRepository.findAll());
+    public List<Student> allStudents() {
+        return studentRepository.findAll();
     }
 
     @GetMapping("/student/{id}")
-    public EntityModel<Student> getStudent(@PathVariable Long id) {
-        return EntityModel.of(
-                        studentRepository.findById(id)
-                                .orElseThrow(() -> new StudentNotFoundException("Student with id: " + id + " not found.")))
-                .add(
-                        WebMvcLinkBuilder.linkTo(
-                                WebMvcLinkBuilder.methodOn(this.getClass()).allStudents()
-                        ).withRel("all-students")
-                );
+    public ResponseEntity<Student> getStudent(@PathVariable("id") Long id) {
+        Optional<Student> student = studentRepository.findById(id);
+        if (student.isPresent()) {
+            return new ResponseEntity<>(student.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @PostMapping(path = "/student", consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Student> saveStudent(@RequestBody Student student) {
-        Optional<Member> member = memberRepository.findById(student.getMember().getMemberId());
-        if (member.isEmpty())
-            throw new MemberNotFoundException("Member with id: " + student.getMember().getMemberId() + " not found.");
+    public Student saveStudent(@RequestBody Student student) {
+        isStudentDataExist(student);
 
-        Optional<StudyGroup> studyGroup = studyGroupRepository.findById(student.getGroupId().getGroupId());
-        if (studyGroup.isEmpty()) {
-            throw new StudyGroupNotFoundException("Study group with id: " + student.getGroupId().getGroupId() + " not found.");
-        }
-
-        studentRepository.save(student);
-        return ResponseEntity.created(
-                        ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri())
-                .build();
+        return studentRepository.save(student);
     }
 
     @PutMapping(path = "/student/{id}", consumes = "application/json")
-    public ResponseEntity<Student> putStudent(@PathVariable Long id, @RequestBody Student student) {
+    public Student putStudent(@PathVariable Long id, @RequestBody Student student) {
         if (!studentRepository.existsById(id))
             throw new StudentNotFoundException("Student with id: " + id + " not found.");
 
-        Optional<Member> member = memberRepository.findById(student.getMember().getMemberId());
-        if (member.isEmpty())
-            throw new MemberNotFoundException("Member with id: " + student.getMember().getMemberId() + " not found.");
-
-        Optional<StudyGroup> studyGroup = studyGroupRepository.findById(student.getGroupId().getGroupId());
-        if (studyGroup.isEmpty()) {
-            throw new StudyGroupNotFoundException("Study group with id: " + student.getGroupId().getGroupId() + " not found.");
-        }
+        isStudentDataExist(student);
 
         student.setStudentId(id);
-        studentRepository.save(student);
-        return ResponseEntity.created(
-                        ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri())
-                .build();
+        return studentRepository.save(student);
     }
 
     @PatchMapping(path = "/student/{id}", consumes = "application/json")
-    public ResponseEntity<Student> patchStudent(@PathVariable Long id, @RequestBody Student student) {
+    public Student patchStudent(@PathVariable Long id, @RequestBody Student student) {
         Optional<Student> updatedStudent = studentRepository.findById(id);
         if (updatedStudent.isEmpty()) {
             throw new StudentNotFoundException("Student with id: " + id + " not found.");
@@ -116,9 +90,25 @@ public class StudentRestController {
             updatedStudent.get().setYearOfEntry(student.getYearOfEntry());
         }
 
-        studentRepository.save(updatedStudent.get());
-        return ResponseEntity.created(
-                        ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri())
-                .build();
+        return studentRepository.save(updatedStudent.get());
     }
+
+    //TODO: This is just for test, do not push!
+
+    /*@DeleteMapping("/student/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteStudent(@PathVariable Long id) {
+        studentRepository.deleteById(id);
+    }*/
+
+    private void isStudentDataExist(Student student) {
+        Optional<Member> member = memberRepository.findById(student.getMember().getMemberId());
+        if (member.isEmpty())
+            throw new MemberNotFoundException("Member with id: " + student.getMember().getMemberId() + " not found.");
+
+        Optional<StudyGroup> studyGroup = studyGroupRepository.findById(student.getGroupId().getGroupId());
+        if (studyGroup.isEmpty())
+            throw new StudyGroupNotFoundException("Study group with id: " + student.getGroupId().getGroupId() + " not found.");
+    }
+
 }

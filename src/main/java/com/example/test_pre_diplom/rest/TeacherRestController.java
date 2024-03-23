@@ -9,14 +9,11 @@ import com.example.test_pre_diplom.entities.Teacher;
 import com.example.test_pre_diplom.exceptions.FacultyNotFoundException;
 import com.example.test_pre_diplom.exceptions.MemberNotFoundException;
 import com.example.test_pre_diplom.exceptions.TeacherNotFoundException;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -33,40 +30,26 @@ public class TeacherRestController {
     }
 
     @GetMapping("/teachers")
-    public CollectionModel<Teacher> allTeachers() {
-        return CollectionModel.of(teacherRepository.findAll());
+    public List<Teacher> allTeachers() {
+        return teacherRepository.findAll();
     }
 
     @GetMapping("/teacher/{id}")
-    public EntityModel<Teacher> getTeacher(@PathVariable Long id) {
-        return EntityModel.of(
-                        teacherRepository.findById(id)
-                                .orElseThrow(() -> new TeacherNotFoundException("Teacher with id: " + id + " not found"))
-                )
-                .add(
-                        WebMvcLinkBuilder.linkTo(
-                                WebMvcLinkBuilder.methodOn(this.getClass()).allTeachers()
-                        ).withRel("all-teachers")
-                );
+    public ResponseEntity<Teacher> getTeacher(@PathVariable Long id) {
+        Optional<Teacher> teacher = teacherRepository.findById(id);
+        if (teacher.isPresent())
+            return new ResponseEntity<>(teacher.get(), HttpStatus.OK);
+
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     //TODO: maybe should change smth or make view Teacher class only with id of member and faculty idk
     @PostMapping(path = "/teacher", consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Teacher> saveTeacher(@RequestBody Teacher teacher) {
-        Optional<Member> member = memberRepository.findById(teacher.getMember().getMemberId());
-        if (member.isEmpty())
-            throw new MemberNotFoundException("Member with id: " + teacher.getMember().getMemberId() + " not found.");
+    public Teacher saveTeacher(@RequestBody Teacher teacher) {
+        isTeacherDataExist(teacher);
 
-        Optional<Faculty> faculty = facultyRepository.findById(teacher.getFaculty().getFacultyId());
-        if (faculty.isEmpty()) {
-            throw new FacultyNotFoundException("Faculty with id: " + teacher.getFaculty().getFacultyId() + " not found.");
-        }
-
-        teacherRepository.save(teacher);
-        return ResponseEntity.created(
-                        ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri())
-                .build();
+        return teacherRepository.save(teacher);
     }
 
     @DeleteMapping(path = "/teacher/{id}")
@@ -76,29 +59,19 @@ public class TeacherRestController {
     }
 
     @PutMapping(path = "/teacher/{id}", consumes = "application/json")
-    public ResponseEntity<Teacher> putTeacher(@PathVariable Long id, @RequestBody Teacher teacher) {
+    public Teacher putTeacher(@PathVariable Long id, @RequestBody Teacher teacher) {
         if (!teacherRepository.existsById(id)) {
             throw new TeacherNotFoundException("Teacher with id: " + id + " not found");
         }
 
-        Optional<Member> member = memberRepository.findById(teacher.getMember().getMemberId());
-        if (member.isEmpty())
-            throw new MemberNotFoundException("Member with id: " + teacher.getMember().getMemberId() + " not found.");
-
-        Optional<Faculty> faculty = facultyRepository.findById(teacher.getFaculty().getFacultyId());
-        if (faculty.isEmpty()) {
-            throw new FacultyNotFoundException("Faculty with id: " + teacher.getFaculty().getFacultyId() + " not found.");
-        }
+        isTeacherDataExist(teacher);
 
         teacher.setTeacherId(id);
-        teacherRepository.save(teacher);
-        return ResponseEntity.created(
-                        ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri())
-                .build();
+        return teacherRepository.save(teacher);
     }
 
     @PatchMapping(path = "/teacher/{id}", consumes = "application/json")
-    public ResponseEntity<Teacher> patchTeacher(@PathVariable Long id, @RequestBody Teacher teacher) {
+    public Teacher patchTeacher(@PathVariable Long id, @RequestBody Teacher teacher) {
         Optional<Teacher> updatedTeacher = teacherRepository.findById(id);
         if (updatedTeacher.isEmpty()) {
             throw new TeacherNotFoundException("Teacher with id: " + id + " not found");
@@ -121,10 +94,17 @@ public class TeacherRestController {
             updatedTeacher.get().setFaculty(faculty.get());
         }
 
-        teacherRepository.save(updatedTeacher.get());
+        return teacherRepository.save(updatedTeacher.get());
+    }
 
-        return ResponseEntity.created(
-                        ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri())
-                .build();
+    private void isTeacherDataExist(@RequestBody Teacher teacher) {
+        Optional<Member> member = memberRepository.findById(teacher.getMember().getMemberId());
+        if (member.isEmpty())
+            throw new MemberNotFoundException("Member with id: " + teacher.getMember().getMemberId() + " not found.");
+
+        Optional<Faculty> faculty = facultyRepository.findById(teacher.getFaculty().getFacultyId());
+        if (faculty.isEmpty()) {
+            throw new FacultyNotFoundException("Faculty with id: " + teacher.getFaculty().getFacultyId() + " not found.");
+        }
     }
 }
