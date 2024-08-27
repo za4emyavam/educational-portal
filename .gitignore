@@ -32,3 +32,6 @@
 
 ### VS Code ###
 /backend/.vscode/
+
+# Ignore application.properties
+/backend/src/main/resources/application.properties
