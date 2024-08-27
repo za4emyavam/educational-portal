@@ -36,6 +36,9 @@
 # Ignore application.properties
 /backend/src/main/resources/application.properties
 
+# Ignore configuration files with secrets
+/backend/src/main/java/com/example/test_pre_diplom/service/S3Service.java
+
 # Frontend React-app
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
