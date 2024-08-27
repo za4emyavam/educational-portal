@@ -1,0 +1,333 @@
+###
+DELETE http://localhost:8081/v1/students/4
+
+###
+POST http://localhost:8081/v1/study_groups
+Content-Type: application/json
+
+{
+  "name": "New name",
+  "yearOfStudy": 3,
+  "departmentId": {
+    "departmentId": 1
+  }
+}
+
+###
+PUT http://localhost:8081/v1/study_groups/3
+Content-Type: application/json
+
+{
+  "name": "New new name",
+  "yearOfStudy": 4
+}
+
+###
+PATCH http://localhost:8081/v1/study_groups/3
+Content-Type: application/json
+
+{
+  "name": "Bems",
+  "yearOfStudy": 2
+}
+
+###
+DELETE http://localhost:8081/v1/study_groups/2
+
+###
+POST http://localhost:8081/v1/members
+Content-Type: application/json
+
+{
+  "email": "student2@sad",
+  "passwordHash": "12345",
+  "role": "STUDENT"
+}
+
+###
+POST http://localhost:8081/v1/members/4/p_data
+Content-Type: application/json
+
+{
+  "firstName": "Abra",
+  "lastName": "Cadabra",
+  "patronymic": "Bems"
+}
+
+###
+POST http://localhost:8081/v1/students
+Content-Type: application/json
+
+{
+  "studentId": 4,
+  "groupId": {
+    "groupId": 3
+  },
+  "yearOfEntry": "2022-09-01",
+  "major": {
+    "majorId": 123
+  }
+}
+
+###
+GET http://localhost:8081/v1/students
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QG1haWwiLCJzdWIiOiJ0ZXN0QG1haWwiLCJpYXQiOjE3MTQzMDA3MjksImV4cCI6MTcxNDMwNjcyOX0.P0_PZG1aDTM8evvMP0RjAP5myJX_BOeYUdN88yZGlAo
+
+###
+POST http://localhost:8081/v1/faculties
+Content-Type: application/json
+
+{
+  "name": "Neew faculty",
+  "description": "desc"
+}
+
+
+###
+PUT http://localhost:8081/v1/faculties/2
+Content-Type: application/json
+
+{
+  "name": "New name",
+  "description": "New desc"
+}
+
+###
+PATCH http://localhost:8081/v1/faculties/2
+Content-Type: application/json
+
+{
+  "description": "Updated"
+}
+
+###
+PUT http://localhost:8081/v1/students/4
+Content-Type: application/json
+
+{
+  "groupId": {
+    "groupId": 1
+  },
+  "yearOfEntry": "2022-08-01",
+  "major": {
+    "majorId": 122
+  }
+}
+
+###
+PATCH http://localhost:8081/v1/students/4
+Content-Type: application/json
+
+{
+  "groupId": {
+    "groupId": 1
+  },
+  "major": {
+    "majorId": 123
+  }
+}
+
+###
+POST http://localhost:8081/v1/teachers
+Content-Type: application/json
+
+{
+"teacherId": 4,
+"department": {
+"departmentId": 2
+}
+}
+
+###
+PATCH http://localhost:8081/v1/teachers/4
+Content-Type: application/json
+
+{
+  "department": {
+    "departmentId": 1
+  }
+}
+
+###
+DELETE http://localhost:8081/v1/teachers/4
+
+###
+PATCH http://localhost:8081/v1/members/2/p_data
+Content-Type: application/json
+
+{
+  "firstName": "Abra",
+  "lastName": "Kadabra",
+  "dateOfBirth": "1999-09-09"
+}
+
+###
+POST http://localhost:8081/v1/subjects
+Content-Type: application/json
+
+{
+  "mainTeacher": {
+    "teacherId": 2
+  },
+  "name": "MATH"
+}
+
+###
+PUT http://localhost:8081/v1/subjects/3
+Content-Type: application/json
+
+{
+  "mainTeacher": {
+    "teacherId": 4
+  },
+  "name": "NEW MATHHH"
+}
+
+###
+PATCH http://localhost:8081/v1/subjects/3
+Content-Type: application/json
+
+{
+  "name": "old math"
+}
+
+###
+DELETE http://localhost:8081/v1/subjects/3
+
+###
+POST http://localhost:8081/v1/subject/2/teachers
+Content-Type: application/json
+
+{
+  "teacherId": 3
+}
+
+###
+DELETE http://localhost:8081/v1/subjects/2/teachers/3
+
+###
+GET http://localhost:8081/v1/tasks/3
+
+
+###
+POST http://localhost:8081/v1/subjects/2/tasks
+Content-Type: application/json
+
+{
+  "task": "INFO",
+  "title": "Lab 2",
+  "description": "test text"
+}
+
+###
+DELETE http://localhost:8081/v1/tasks/4
+
+###
+PATCH http://localhost:8081/v1/subjects/1/tasks/3
+Content-Type: application/json
+
+{
+  "title": "LAAAB 1",
+  "gradedTask": {
+    "maxScore": 30,
+    "dateTo": [
+      2024,
+      4,
+      30,
+      21,
+      40
+    ]
+  }
+}
+
+###
+GET http://localhost:8081/v1/subjects/1/task/3/students/5
+
+###
+POST http://localhost:8081/v1/subjects/1/tasks/3/students/7
+Content-Type: application/json
+
+{
+  "teacherId": {
+    "teacherId": 3
+  },
+  "scoreValue": 20
+}
+
+###
+PATCH http://localhost:8081/v1/subjects/1/tasks/3/students/7
+Content-Type: application/json
+
+{
+  "teacherId": {
+    "teacherId": 2
+  },
+  "scoreValue": 10
+}
+
+###
+DELETE http://localhost:8081/v1/subjects/1/tasks/3/students/7
+
+###
+GET http://localhost:8081/v1/schedules
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QG1haWwiLCJzdWIiOiJ0ZXN0QG1haWwiLCJpYXQiOjE3MTU2MDk2NjgsImV4cCI6MTcxNTYxMDI2OH0.QHkfTm0UPUSvevI002sVbE1fUVGF0kGdyoEYWdjcOp0
+
+###
+POST http://localhost:8081/v1/login
+Content-Type: application/json
+
+{
+  "username": "test@gmail.com",
+  "password": "sad54321"
+}
+
+###
+GET http://localhost:8081/v1/schedules/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QG1haWwiLCJzdWIiOiJ0ZXN0QG1haWwiLCJpYXQiOjE3MTU0MzAyNzksImV4cCI6MTcxNTQzMDg3OX0.a4DzsrjKix2YsGdl76N0HA2KHRErBBTg9iC10wDp8Wg
+
+###
+GET http://localhost:8081/v1/subjects/student/7
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QG1haWwiLCJzdWIiOiJ0ZXN0QG1haWwiLCJpYXQiOjE3MTU2MDk2NjgsImV4cCI6MTcxNTYxMDI2OH0.QHkfTm0UPUSvevI002sVbE1fUVGF0kGdyoEYWdjcOp0
+
+###
+GET http://localhost:8081/v1/subjects/1/tasks
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QG1haWwiLCJzdWIiOiJ0ZXN0QG1haWwiLCJpYXQiOjE3MTU2NzkyMjksImV4cCI6MTcxNTY3OTgyOX0.fQCu-AanjcjmH5pg8TM3aoMM_0aaRf_6f70dwbcuu_w
+
+###
+GET http://localhost:8081/v1/subjects/1/students/8/scores
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QG1haWwiLCJzdWIiOiJ0ZXN0QG1haWwiLCJpYXQiOjE3MTU2OTQ3MzUsImV4cCI6MTcxNTY5NTMzNX0.qxvHoacFhTV6cQQHntc2wRxKk4Y0OTQNV3ZWxPA0MCM
+
+###
+GET http://localhost:8081/v1/subjects/1/tasks/3/students/7
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QG1haWwiLCJzdWIiOiJ0ZXN0QG1haWwiLCJpYXQiOjE3MTU3MTc0ODcsImV4cCI6MTcxNTcxODA4N30.tpjPLvgIh8a6rFNxQbHleRHsSMhxG1cb8OS3WjTi5nc
+
+###
+GET http://localhost:8081/v1/tasks/students/7
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QG1haWwiLCJzdWIiOiJ0ZXN0QG1haWwiLCJpYXQiOjE3MTU3MjA1MDgsImV4cCI6MTcxNTcyMTEwOH0.jD4fm46Z3PjgABah24EvNe1tXuisciXZDN0AU54m1hM
+
+###
+GET http://localhost:8081/v1/tasks/students/7/pag?page=0&size=2&sort=title&direction=asc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QG1haWwiLCJzdWIiOiJ0ZXN0QG1haWwiLCJpYXQiOjE3MTU3NjU5NzgsImV4cCI6MTcxNTc2NjU3OH0.spEL-U04u8Q8RnKzO3e-8qMKHRvBqgA52sjJhIUjuAY
+
+###
+GET http://localhost:8081/v1/tasks/4/files
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QG1haWwiLCJzdWIiOiJ0ZXN0QG1haWwiLCJpYXQiOjE3MTU4MDEzMDcsImV4cCI6MTcxNTgwMTkwN30.MiVYiVs0hgfzVXHJxTwSJCEtYviql__7UYi9VcYd13U
+
+###
+GET http://localhost:8081/v1/subjects/teacher/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QG1haWwiLCJzdWIiOiJ0ZXN0QG1haWwiLCJpYXQiOjE3MTU5NDU3OTQsImV4cCI6MTcxNTk0NjM5NH0.hR5Hhn5O1f4y8o971o9fsBWR0V6YaAFrgP-gyGULnpM
+
+###
+GET http://localhost:8081/v1/subjects/1/tasks/4/students/8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiU1RVREVOVCIsImlkIjo4LCJlbWFpbCI6InN0dWRlbnQ0QGdtYWlsLmNvbSIsInN1YiI6InN0dWRlbnQ0QGdtYWlsLmNvbSIsImlhdCI6MTcxNjEzNDIwOCwiZXhwIjoxNzE2MTM0ODA4fQ.JeRqF2h8AIGRcdevp_z72c8w7JJS0eLL3IiHHgpGRKA
+
+###
+POST http://localhost:8081/v1/majors
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJpZCI6MSwiZW1haWwiOiJ0ZXN0QGdtYWlsLmNvbSIsInN1YiI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzE3NTE0OTA3LCJleHAiOjE3MTc1MTU1MDd9.bIdDenRISPCYoy7Wc8yaqZ6Ae7R3mFZb803QK0rVYA4
+Content-Type: application/json
+
+{
+  "majorId": 111,
+  "name": "XZ",
+  "facultyId": 1
+}

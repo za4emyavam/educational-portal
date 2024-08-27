@@ -1,24 +1,34 @@
-# Compiled class file
-*.class
+### Backend Project (Spring) ###
+/backend/HELP.md
+/backend/target/
+!/backend/.mvn/wrapper/maven-wrapper.jar
+!/backend/**/src/main/**/target/
+!/backend/**/src/test/**/target/
 
-# Log file
-*.log
+### STS ###
+/backend/.apt_generated
+/backend/.classpath
+/backend/.factorypath
+/backend/.project
+/backend/.settings
+/backend/.springBeans
+/backend/.sts4-cache
 
-# BlueJ files
-*.ctxt
+### IntelliJ IDEA ###
+/backend/.idea
+/backend/*.iws
+/backend/*.iml
+/backend/*.ipr
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+### NetBeans ###
+/backend/nbproject/private/
+/backend/nbbuild/
+/backend/dist/
+/backend/nbdist/
+/backend/.nb-gradle/
+/backend/build/
+!/backend/**/src/main/**/build/
+!/backend/**/src/test/**/build/
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+### VS Code ###
+/backend/.vscode/
